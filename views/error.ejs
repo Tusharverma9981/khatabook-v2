@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Error</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #ffe6e6;
+      color: #a94442;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .error-container {
+      background-color: #f2dede;
+      border: 1px solid #ebccd1;
+      padding: 20px 30px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+      max-width: 500px;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 0;
+      font-size: 2em;
+    }
+    p {
+      margin: 10px 0 0;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1>Oops! Something went wrong.</h1>
+    <p><%=message|| "Unknown error occurred." %></p>
+  </div>
+</body>
+</html>
