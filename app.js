@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const User = require('./model/user.model');
+const bcrypt = require('bcrypt');
 
 require('dotenv').config();
 
@@ -38,12 +39,15 @@ app.post('/login',async (req, res) => {
      return res.render('error', { message: 'Invalid email' });
     }
 
-    // Check password (plain text check here - use bcrypt for production)
-    if (user.password !== password) {
+     // Compare password with the hashed one
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
       return res.render('error', { message: 'Invalid email or password' });
     }
     res.redirect('/home');
   } catch (err) {
+    
       res.render('error', { message: err.message })
   }
 })
@@ -51,10 +55,13 @@ app.post('/login',async (req, res) => {
 
 
 app.post('/register', async (req, res) => {
+    
   try {
     const { username, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10); 
 
-    const newUser =await new User({ username, email, password });
+    //bycrypt is used to hash the password before saving it to the database
+    const newUser =await new User({ username, email, password: hashedPassword  });
     await newUser.save();
     res.redirect('/home');
 
