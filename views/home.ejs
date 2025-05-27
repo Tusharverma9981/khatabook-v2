@@ -16,10 +16,16 @@
             <h3 class="text-2xl tracking-tight">Khaatabook</h3>
             <div class="navlinks flex gap-5">
                 <a class="tracking-tight" href="/">Home</a>
+                
                 <a class="tracking-tight" href="/create">Create New Hisaab</a>
+                 <form action="/logout" method="POST">
+            <button type="submit" class="tracking-tight hover:underline focus:outline-none">
+                Logout
+            </button>
             </div>
         </nav>
         <div class="px-10 hisaabs">
+             <h1>Welcome, <%= username %>!</h1>
             <h3 class="capitalize text-2xl font-medium mb-5 mt-10 tracking-tight">All hisaab kitaab</h3>
         
             <div class="hisaab w-fit items-center py-3 mb-3 px-5 gap-20 bg-blue-500 flex justify-between rounded-md">
