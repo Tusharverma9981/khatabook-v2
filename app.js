@@ -146,6 +146,78 @@ app.post('/create',authMiddleware, async (req, res) => {
   }
 });
 
+app.get('/hisaab/:id',authMiddleware,async (req,res)=>{
+  try {
+    const hisaab = await Hisaab.findById(req.params.id);
+
+
+    res.render('hisaab', { hisaab });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { message: 'Error fetching Hisaab' });
+  }
+})
+
+app.get('/hisaab/:id/edit', authMiddleware, async (req, res) => {
+  try {
+    const hisaab = await Hisaab.findById(req.params.id);
+   
+    res.render('edit', { hisaab });
+  } catch (err) {
+    res.render('error', { message: 'Error loading edit form' });
+  }
+});
+
+app.post('/hisaabs/:id/edit', authMiddleware, async (req, res) => {
+  try {
+    const { title, label, encrypted, password, keys, values } = req.body;
+    //console.log(title,label,keys,values,encrypted,password);
+    
+    // Create new content array from key/value inputs
+    const content = keys.map((key, i) => ({
+      key,
+      value: values[i]
+    }));
+
+    await Hisaab.findOneAndUpdate(
+      { _id: req.params.id},
+      {
+        title,
+        label,
+        encrypted: encrypted === 'on',
+        password: encrypted === 'on' ? password : null,
+        content
+      },
+      { new: true }
+    );
+
+    res.redirect(`/home`);
+  } catch (err) {
+    console.log(err);
+    
+    res.render('error', { message: 'Error updating Hisaab' });
+  }
+});
+
+// DELETE route to remove a Hisaab
+app.post('/hisaabs/:id/delete', authMiddleware , async (req, res) => {
+  try {
+    const hisaab = await Hisaab.findOneAndDelete({
+      _id: req.params.id, 
+     // Ensures only the owner can delete
+    });
+
+   
+
+    res.redirect('/home');
+  } catch (err) {
+    res.status(500).render('error', { message: 'Error deleting Hisaab' });
+  }
+});
+
+
+
+
 
 
 

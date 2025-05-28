@@ -173,3 +173,13 @@
 </body>
 
 </html>
+
+ <div>
+    <% hisaab.content.forEach((item, i) => { %>
+      <div class="flex space-x-2">
+        <input type="text" name="keys" value="<%= item.key %>" class="input" placeholder="Key" required />
+        <br>
+        <input type="number" name="values" value="<%= item.value %>" class="input" placeholder="Value" required />
+      </div>
+    <% }) %>
+  </div>
