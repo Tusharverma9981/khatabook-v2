@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <main class="w-full h-screen bg-zinc-100 font-['Helvetica']">
+        <nav class="flex px-10 justify-between py-5">
+            <h3 class="text-2xl tracking-tight">Khaatabook</h3>
+            <div class="navlinks flex gap-5">
+                 <a class="tracking-tight" href="/home">Home</a>
+                
+                <a class="tracking-tight" href="/create">Create New Hisaab</a>
+                 
+            </div>
+           
+        </nav>
+<form action="/create" method="POST" class="space-y-4 m-5 p-5 w-[50%] bg-zinc-100 font-['Helvetica']">
+
+  <input type="text" name="title" placeholder="Hisaab Title" required class="border p-2 w-full" />
+
+  <input type="text" name="label" placeholder="Label (e.g. Personal, Work)" required class="border p-2 w-full" />
+
+  <!-- Multiple entries -->
+  <div id="contentFields" class="border border-solid rounded-full">
+    <div class="flex gap-2">
+      <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full" />
+      <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full" />
+    </div>
+  </div>
+
+  <button type="button" onclick="addField()" class="bg-blue-500 text-white px-3 py-1 mt-2 rounded">
+    Add More
+  </button>
+
+  <!-- Encryption -->
+  <div>
+    <label>
+      <input type="checkbox" name="encrypted" id="encryptToggle" onchange="togglePassword()" />
+      Encrypt this Hisaab
+    </label>
+    <input type="password" name="password" placeholder="Set Password" id="passwordField" class="border p-2 w-full mt-2 hidden" />
+  </div>
+
+  <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Create Hisaab</button>
+
+</form>
+</main>
+
+<script>
+  function addField() {
+    const div = document.createElement('div');
+    div.className = "flex gap-2 mt-2";
+    div.innerHTML = `
+      <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full" />
+      <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full" />
+    `;
+    document.getElementById("contentFields").appendChild(div);
+  }
+
+  function togglePassword() {
+    const checkbox = document.getElementById('encryptToggle');
+    const pwdField = document.getElementById('passwordField');
+    pwdField.classList.toggle('hidden', !checkbox.checked);
+    if (!checkbox.checked) pwdField.value = '';
+  }
+</script>
+
+</body>
+</html>

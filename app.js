@@ -5,7 +5,8 @@ const User = require('./model/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-authMiddleware = require('./MiddleWare/authMiddleware');
+const authMiddleware = require('./MiddleWare/authMiddleware');
+const Hisaab = require("./model/hisaab.model")
 
 require('dotenv').config();
 
@@ -34,9 +35,22 @@ app.get('/register', (req, res) => {
 })
 
 //these are for the main usage
-app.get('/home', authMiddleware,(req, res) => {
-  res.render('home',{ username: req.user.username });
+app.get('/home', authMiddleware,async (req, res) => {
+    try {
+    const userId = req.user._id;
+    // Fetch all hisaabs created by this user
+    const hisaabs = await Hisaab.find({ createdBy: userId });
+    
+    res.render('home', { hisaabs });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { message: 'Failed to load hisaabs' });
+  }
 })
+
+app.get('/create', (req,res)=>{
+  res.render('create')
+});
 
 
 //and these are the routes for the login and register pages mainly for authentication
@@ -90,7 +104,46 @@ app.post('/register', async (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('token');
-  res.send('Logged out');
+  res.redirect("/");
+});
+
+
+//routes for hisaab crud
+app.post('/create',authMiddleware, async (req, res) => {
+  try {
+    const { title, key, value, encrypted, password, label } = req.body;
+    
+
+    // Construct content from key[] and value[]
+    const content = [];
+    if (Array.isArray(key) && Array.isArray(value)) {
+      for (let i = 0; i < key.length; i++) {
+        if (key[i] && value[i]) {
+          content.push({ key: key[i], value: parseFloat(value[i]) });
+        }
+      }
+    }
+
+    const newHisaab = new Hisaab({
+      title,
+      label,
+      content,
+      encrypted: encrypted === 'on',
+      createdBy: req.user._id,
+    });
+
+    if (newHisaab.encrypted) {
+      if (!password) return res.status(400).send("Password required");
+      const hashedPassword = await bcrypt.hash(password, 10);
+      newHisaab.password = hashedPassword;
+    }
+
+    await newHisaab.save();
+    res.redirect('/home');
+  } catch (err) {
+    console.error(err);
+       return res.render('error', { message: "Error creating Hisaab"  });
+  }
 });
 
 
