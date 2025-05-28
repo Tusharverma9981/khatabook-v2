@@ -30,12 +30,17 @@
    <div>
     <% hisaab.content.forEach((item, i) => { %>
       <div class="flex space-x-2 mt-4">
-        <input type="text" name="keys" value="<%= item.key %>" class="input" placeholder="Key" required />
+        <input type="text" name="keys[]" value="<%= item.key %>" class="input" placeholder="Key" required />
         <br>
-        <input type="number" name="values" value="<%= item.value %>" class="input" placeholder="Value" required />
+        <input type="number" name="values[]" value="<%= item.value %>" class="input" placeholder="Value" required />
       </div>
     <% }) %>
   </div>
+
+  <% if( hisaab.encrypted) {%>
+  <input type="text" hidden value="<%= hisaab.encrypted %>">
+  <input type="text" hidden value="<%= hisaab.password %>">
+  <% } %>
   <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Update  Hisaab</button>
 
 </form>

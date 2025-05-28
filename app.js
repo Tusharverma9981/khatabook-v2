@@ -181,14 +181,15 @@ app.post('/hisaabs/:id/edit', authMiddleware, async (req, res) => {
       key,
       value: values[i]
     }));
+    
 
     await Hisaab.findOneAndUpdate(
       { _id: req.params.id},
       {
         title,
         label,
-        encrypted: encrypted === 'on',
-        password: encrypted === 'on' ? password : null,
+        encrypted,
+        password,
         content
       },
       { new: true }
