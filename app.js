@@ -53,6 +53,7 @@ app.get('/create', (req,res)=>{
 });
 
 
+
 //and these are the routes for the login and register pages mainly for authentication
 app.post('/login',async (req, res) => {
    try {
@@ -221,4 +222,7 @@ app.post('/hisaabs/:id/delete', authMiddleware , async (req, res) => {
 
 
 
-app.listen(3000)
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
