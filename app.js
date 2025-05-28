@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname,"public")));
 
 
 //these are the routes for the application
-app.get('/', (req, res) => {
+app.get('/login', (req, res) => {
   res.render('index');
 })
 
@@ -35,7 +35,7 @@ app.get('/register', (req, res) => {
 })
 
 //these are for the main usage
-app.get('/home', authMiddleware,async (req, res) => {
+app.get('/', authMiddleware,async (req, res) => {
     try {
     const userId = req.user._id;
     // Fetch all hisaabs created by this user
@@ -79,7 +79,7 @@ app.post('/login',async (req, res) => {
       maxAge: 3600000
         });
 
-    res.redirect('/home');
+    res.redirect('/');
   } catch (err) {
     
 
@@ -96,7 +96,7 @@ app.post('/register', async (req, res) => {
     //bycrypt is used to hash the password before saving it to the database
     const newUser =await new User({ username, email, password: hashedPassword  });
     await newUser.save();
-    res.redirect('/');
+    res.redirect('/login');
 
   } catch (err) {
    res.render('error', { message: err.message })
@@ -105,7 +105,7 @@ app.post('/register', async (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('token');
-  res.redirect("/");
+  res.redirect("/login");
 });
 
 
@@ -140,7 +140,7 @@ app.post('/create',authMiddleware, async (req, res) => {
     }
 
     await newHisaab.save();
-    res.redirect('/home');
+    res.redirect('/');
   } catch (err) {
     console.error(err);
        return res.render('error', { message: "Error creating Hisaab"  });
@@ -192,7 +192,7 @@ app.post('/hisaabs/:id/edit', authMiddleware, async (req, res) => {
       { new: true }
     );
 
-    res.redirect(`/home`);
+    res.redirect(`/`);
   } catch (err) {
     console.log(err);
     
@@ -210,17 +210,11 @@ app.post('/hisaabs/:id/delete', authMiddleware , async (req, res) => {
 
    
 
-    res.redirect('/home');
+    res.redirect('/');
   } catch (err) {
     res.status(500).render('error', { message: 'Error deleting Hisaab' });
   }
 });
-
-
-
-
-
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
