@@ -150,8 +150,10 @@ app.post('/create',authMiddleware, async (req, res) => {
 app.get('/hisaab/:id',authMiddleware,async (req,res)=>{
   try {
     const hisaab = await Hisaab.findById(req.params.id);
-
-
+    if(hisaab.encrypted){
+      return res.render('unlock',{hisaab})
+    }
+    
     res.render('hisaab', { hisaab });
   } catch (err) {
     console.error(err);
@@ -215,6 +217,16 @@ app.post('/hisaabs/:id/delete', authMiddleware , async (req, res) => {
     res.status(500).render('error', { message: 'Error deleting Hisaab' });
   }
 });
+
+app.post('/unlock/:id',async (req,res)=> {
+  const hisaab = await Hisaab.findById(req.params.id);
+  const {password} = req.body;
+   const isMatch = await bcrypt.compare(password, hisaab.password);
+  if (isMatch) {
+    return res.render('hisaab', { hisaab });
+  }
+  res.render('error', { message: "Access Denied"  });
+})
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
