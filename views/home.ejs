@@ -23,12 +23,24 @@
             <button type="submit" class="tracking-tight hover:underline focus:outline-none">
                 Logout
             </button>
+            </form>
             </div>
           
                     </nav>
         <div class="px-10 hisaabs">
             <h3 class="capitalize text-2xl font-medium mb-5 mt-10 tracking-tight">All hisaab kitaab</h3>
-            <div class="flex flex-wrap gap-4">
+           <form method="GET" action="/">
+                <select name="sort" onchange="this.form.submit()" class="bg-zinc-100 border-opacity-0">
+                <option class="bg-zinc-100 border-opacity-0" value="date_desc" <%= sortBy === 'date_desc' ? 'selected' : '' %>>Newest First</option>
+                <option class="bg-zinc-100 border-opacity-0" value="date_asc" <%= sortBy === 'date_asc' ? 'selected' : '' %>>Oldest First</option>
+                <option class="bg-zinc-100 border-opacity-0" value="title_asc" <%= sortBy === 'title_asc' ? 'selected' : '' %>>Title A-Z</option>
+                <option class="bg-zinc-100 border-opacity-0" value="title_desc" <%= sortBy === 'title_desc' ? 'selected' : '' %>>Title Z-A</option>
+            </select>
+                </form>
+
+
+
+            <div class="flex flex-wrap gap-4 mt-5">
                 <% hisaabs.forEach(hisaab => {  ;
                  %>
             <!-- Hisaab Card -->

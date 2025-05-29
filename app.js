@@ -30,23 +30,42 @@ app.get('/login', (req, res) => {
   res.render('index');
 })
 
+app.post('/',(req,res)=>{
+  console.log(req.body.sortBy);
+  res.send("home with sorted");  
+})
+
 app.get('/register', (req, res) => {
   res.render('register');
 })
 
 //these are for the main usage
-app.get('/', authMiddleware,async (req, res) => {
-    try {
+app.get('/', authMiddleware, async (req, res) => {
+  try {
     const userId = req.user._id;
-    // Fetch all hisaabs created by this user
-    const hisaabs = await Hisaab.find({ createdBy: userId });
+
+    const sortBy = req.query.sort || 'date_desc';
+
+    // Define a map of valid sort options
     
-    res.render('home', { hisaabs });
+let sortQuery = {};
+   if (sortBy === 'date_asc') sortQuery = { createdAt: 1 };
+else if (sortBy === 'date_desc') sortQuery = { createdAt: -1 };
+else if (sortBy === 'title_asc') sortQuery = { title: 1 };
+else if (sortBy === 'title_desc') sortQuery = { title: -1 };
+
+    // Fallback to default sort if invalid query
+    
+
+    const hisaabs = await Hisaab.find({ createdBy: userId }).sort(sortQuery);
+
+    res.render('home', { hisaabs, sortBy });
   } catch (err) {
     console.error(err);
     res.render('error', { message: 'Failed to load hisaabs' });
   }
-})
+});
+
 
 app.get('/create', (req,res)=>{
   res.render('create')
@@ -105,6 +124,8 @@ app.post('/register', async (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('token');
+  console.log("reached");
+  
   res.redirect("/login");
 });
 
