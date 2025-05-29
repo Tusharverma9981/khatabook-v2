@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Search Results</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-100 font-sans">
+  <main class="px-10 py-6">
+    <h2 class="text-2xl font-semibold mb-4">Search Results</h2>
+
+    <a href="/" class="mb-4 inline-block text-blue-600 hover:underline">← Back to Home</a>
+
+    <div class="flex flex-wrap gap-4">
+      <% if (hisaabs.length === 0) { %>
+        <p>No results found.</p>
+      <% } else { %>
+        <% hisaabs.forEach(hisaab => { %>
+          <a href="/hisaab/<%= hisaab._id %>">
+            <div class="w-[250px] bg-white shadow-md rounded-xl p-4 hover:scale-105 hover:shadow-xl transition duration-300">
+              <div class="flex justify-between items-start mb-2">
+                <p class="text-lg font-bold text-gray-800"><%= hisaab.title %></p>
+                <p class="text-xs text-gray-500"><%= hisaab.date.toDateString() %></p>
+              </div>
+              <div class="mt-2">
+                <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+                  <%= hisaab.label %>
+                </span>
+                <% if (hisaab.encrypted) { %>
+                  <span class="ml-2 text-gray-400">🔒 Encrypted</span>
+                <% } %>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      <% } %>
+    </div>
+  </main>
+</body>
+</html>

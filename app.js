@@ -66,6 +66,40 @@ else if (sortBy === 'title_desc') sortQuery = { title: -1 };
   }
 });
 
+app.get('/search', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { search = '', date = '', sort = 'date_desc' } = req.query;
+
+    let query = { createdBy: userId };
+
+    if (search) {
+      query.title = { $regex: search, $options: 'i' };
+    }
+
+    if (date) {
+      const selected = new Date(date);
+      const nextDay = new Date(selected);
+      nextDay.setDate(selected.getDate() + 1);
+      query.date = { $gte: selected, $lt: nextDay };
+    }
+
+    let sortQuery = {};
+    if (sort === 'date_asc') sortQuery = { createdAt: 1 };
+    else if (sort === 'title_asc') sortQuery = { title: 1 };
+    else if (sort === 'title_desc') sortQuery = { title: -1 };
+    else sortQuery = { createdAt: -1 };
+
+    const hisaabs = await Hisaab.find(query).sort(sortQuery);
+
+    res.render('search', { hisaabs, search, date, sort });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { message: 'Search failed.' });
+  }
+});
+
+
 
 app.get('/create', (req,res)=>{
   res.render('create')
