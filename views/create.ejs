@@ -4,71 +4,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/public/css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <title>Create New Hisaab</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <style>
+        /* Custom font family for the entire body */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Modal styles for all modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6B7280;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6366F1; /* indigo-500 */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 
 <body>
-    <main class="w-full h-screen bg-zinc-100 font-['Helvetica']">
-        <nav class="flex px-10 justify-between py-5">
-            <h3 class="text-2xl tracking-tight">Khaatabook</h3>
-            <div class="navlinks flex gap-5">
-                 <a class="tracking-tight" href="/">Home</a>
+    <main class="w-full min-h-screen bg-zinc-100">
+        <nav class="flex flex-col md:flex-row px-4 md:px-10 justify-between py-5 items-center">
+            <h3 class="text-2xl tracking-tight mb-4 md:mb-0">Khaatabook</h3>
+            <div class="navlinks flex flex-col md:flex-row gap-2 md:gap-5 mt-4 md:mt-0 items-center md:items-center md:justify-end">
+                <a class="tracking-tight hover:underline" href="/">Home</a>
             </div>
-           
         </nav>
-<form action="/create" method="POST" class="space-y-4 m-5 p-5 w-[50%] bg-zinc-100 font-['Helvetica']">
 
-  <input type="text" name="title" placeholder="Hisaab Title" required class="border p-2 w-full" />
+        <form action="/create" method="POST" class="space-y-4 m-5 p-5 w-full md:w-[50%] bg-zinc-100 rounded-lg shadow-md">
 
-  <input type="text" name="label" placeholder="Label (e.g. Personal, Work)" required class="border p-2 w-full" />
+            <h2 class="text-2xl font-semibold mb-4">Create New Hisaab</h2>
 
-  <!-- Multiple entries -->
-  <div id="contentFields" class="border border-solid rounded-full">
-    <div class="flex gap-2">
-      <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full" />
-      <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full" />
+            <input type="text" name="title" id="hisaabTitleInput" placeholder="Hisaab Title" required class="border p-2 w-full rounded" />
+
+            <input type="text" name="label" id="hisaabLabelInput" placeholder="Label (e.g. Personal, Work)" required class="border p-2 w-full rounded" />
+
+            <div id="contentFields" class="border border-solid rounded-lg p-2">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full rounded" />
+                    <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full rounded" />
+                </div>
+            </div>
+
+            <button type="button" onclick="addField()" class="bg-blue-400 text-white px-3 py-1 mt-2 rounded hover:bg-blue-500 transition-colors duration-200">
+                Add More
+            </button>
+
+            <button 
+                type="button"
+                class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200 text-sm ml-2"
+                onclick="openPhotoModal()"
+            >
+                📸 Photo to Hisaab
+            </button>
+
+            <div>
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" name="encrypted" id="encryptToggle" onchange="togglePassword()" class="form-checkbox h-5 w-5 text-blue-600 rounded" />
+                    <span class="text-gray-700">Encrypt this Hisaab</span>
+                </label>
+                <input type="password" name="password" placeholder="Set Password" id="passwordField" class="border p-2 w-full mt-2 hidden rounded" />
+            </div>
+
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-200">Create Hisaab</button>
+
+        </form>
+    </main>
+
+    <div id="photoModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-button" onclick="closePhotoModal()">&times;</button>
+            <h4 class="text-xl font-semibold mb-4">Capture Photo for Hisaab</h4>
+            
+            <input type="file" accept="image/*" capture="camera" id="photoInput" class="mb-4 p-2 border rounded w-full">
+            
+            <div id="photoPreviewContainer" class="mb-4 flex justify-center items-center h-48 bg-gray-100 rounded-md overflow-hidden hidden">
+                <img id="photoPreview" src="#" alt="Photo Preview" class="max-w-full max-h-full object-contain">
+            </div>
+
+            <div id="photoLoading" class="text-center py-4 hidden">
+                <div class="spinner mb-2"></div>
+                <p class="text-gray-600">Processing image with AI...</p>
+            </div>
+
+            <div id="extractedContentDisplay" class="hidden">
+                <h5 class="font-semibold text-lg mt-4 mb-2">Extracted Data:</h5>
+                <p class="mb-2"><strong>Title:</strong> <span id="extractedTitle"></span></p>
+                <p class="mb-2"><strong>Label:</strong> <span id="extractedLabel" class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full"></span></p>
+                <p class="mb-2"><strong>Content:</strong></p>
+                <ul id="extractedContentList" class="list-disc list-inside text-sm"></ul>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button 
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors duration-200"
+                    id="applyChangesButton"
+                    onclick="applyExtractedContent()"
+                    disabled
+                >
+                    Apply to Form
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
+    
+    <script>
+        // Global variables to store extracted data temporarily
+        let currentExtractedTitle = '';
+        let currentExtractedContent = [];
+        let currentExtractedLabel = '';
 
-  <button type="button" onclick="addField()" class="bg-inherit  px-3 py-1 mt-2 rounded">
-    Add More
-  </button>
+        function addField() {
+            const div = document.createElement('div');
+            div.className = "flex flex-col sm:flex-row gap-2 mt-2"; // Added flex-col for mobile stacking
+            div.innerHTML = `
+                <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full rounded" />
+                <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full rounded" />
+            `;
+            document.getElementById("contentFields").appendChild(div);
+        }
 
-  <!-- Encryption -->
-  <div>
-    <label>
-      <input type="checkbox" name="encrypted" id="encryptToggle" onchange="togglePassword()" />
-      Encrypt this Hisaab
-    </label>
-    <input type="password" name="password" placeholder="Set Password" id="passwordField" class="border p-2 w-full mt-2 hidden" />
-  </div>
+        function togglePassword() {
+            const checkbox = document.getElementById('encryptToggle');
+            const pwdField = document.getElementById('passwordField');
+            pwdField.classList.toggle('hidden', !checkbox.checked);
+            if (!checkbox.checked) pwdField.value = '';
+        }
 
-  <button type="submit" class="bg-blue-300  px-4 py-2 rounded">Create Hisaab</button>
+        // --- Modal Functions ---
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
 
-</form>
-</main>
+        function openPhotoModal() {
+            openModal('photoModal');
+            // Reset modal state
+            document.getElementById('photoInput').value = ''; // Clear selected file
+            document.getElementById('photoPreviewContainer').classList.add('hidden');
+            document.getElementById('photoLoading').classList.add('hidden');
+            document.getElementById('extractedContentDisplay').classList.add('hidden');
+            document.getElementById('applyChangesButton').disabled = true;
+            currentExtractedTitle = '';
+            currentExtractedContent = [];
+            currentExtractedLabel = '';
+            document.getElementById('extractedLabel').textContent = '';
+        }
 
-<script>
-  function addField() {
-    const div = document.createElement('div');
-    div.className = "flex gap-2 mt-2";
-    div.innerHTML = `
-      <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full" />
-      <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full" />
-    `;
-    document.getElementById("contentFields").appendChild(div);
-  }
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.remove('show');
+        }
 
-  function togglePassword() {
-    const checkbox = document.getElementById('encryptToggle');
-    const pwdField = document.getElementById('passwordField');
-    pwdField.classList.toggle('hidden', !checkbox.checked);
-    if (!checkbox.checked) pwdField.value = '';
-  }
-</script>
+        // --- Photo Capture and AI Processing Functions ---
+        document.getElementById('photoInput').addEventListener('change', handlePhotoCapture);
+
+        function handlePhotoCapture(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                console.log("No file selected.");
+                return;
+            }
+
+            // Check file type to set correct mimeType for Gemini API
+            let mimeType = file.type;
+            if (!mimeType.startsWith('image/')) {
+                console.error("Selected file is not an image:", mimeType);
+                alert("Please select an image file (e.g., JPEG, PNG).");
+                closePhotoModal();
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // The Base64 string includes a prefix (e.g., "data:image/jpeg;base64,").
+                // We need to remove this prefix for the Gemini API.
+                const base64Image = e.target.result.split(',')[1]; 
+                
+                document.getElementById('photoPreview').src = e.target.result;
+                document.getElementById('photoPreviewContainer').classList.remove('hidden');
+                
+                // Show loading spinner and hide previous results
+                document.getElementById('extractedContentDisplay').classList.add('hidden');
+                document.getElementById('photoLoading').classList.remove('hidden');
+                document.getElementById('applyChangesButton').disabled = true;
+
+                // Call the Gemini API directly from the frontend
+                processImageWithGemini(base64Image, mimeType);
+            };
+            reader.onerror = function(error) {
+                console.error("FileReader error: ", error);
+                document.getElementById('photoLoading').classList.add('hidden');
+                document.getElementById('extractedContentDisplay').classList.remove('hidden');
+                document.getElementById('extractedTitle').textContent = 'Error';
+                document.getElementById('extractedLabel').textContent = 'N/A';
+                document.getElementById('extractedContentList').innerHTML = `<li class="text-red-500">Error reading file.</li>`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processImageWithGemini(base64ImageData, mimeType) {
+            try {
+                // This API key will be provided by the Canvas environment at runtime.
+                // It's intentionally left empty in the code.
+                const apiKey = "AIzaSyDI8lQdg6SAGIrlZePoEmYp6wwqDUDvXR4"; 
+                if (!apiKey) {
+                    console.error("API Key is missing. Cannot call Gemini API.");
+                    document.getElementById('photoLoading').classList.add('hidden');
+                    document.getElementById('extractedContentDisplay').classList.remove('hidden');
+                    document.getElementById('extractedTitle').textContent = 'Error';
+                    document.getElementById('extractedLabel').textContent = 'N/A';
+                    document.getElementById('extractedContentList').innerHTML = `<li class="text-red-500">API Key not available.</li>`;
+                    return;
+                }
+
+                const prompt = `Analyze the image. Identify a main title for the document/receipt/bill, a suitable short label (e.g., "Expense", "Income", "Utility", "Groceries"), and then extract key-value pairs representing individual items or entries. For each item, provide a 'key' (e.g., "Item Name", "Service", "Description") and a 'value' (e.g., "Amount", "Quantity", "Price").
+                Return the data as a JSON object with 'title' (string), 'label' (string), and 'content' (array of objects with 'key' and 'value' properties).
+                Example:
+                {
+                    "title": "Grocery Bill",
+                    "label": "Groceries",
+                    "content": [
+                        {"key": "Milk", "value": "₹ 50"},
+                        {"key": "Bread", "value": "₹ 30"}
+                    ]
+                }`;
+                
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: mimeType, // Use the detected MIME type
+                                        data: base64ImageData
+                                    }
+                                }
+                            ]
+                        }
+                    ],
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "title": { "type": "STRING" },
+                                "label": { "type": "STRING" },
+                                "content": {
+                                    "type": "ARRAY",
+                                    "items": {
+                                        "type": "OBJECT",
+                                        "properties": {
+                                            "key": { "type": "STRING" },
+                                            "value": { "type": "STRING" }
+                                        },
+                                        "propertyOrdering": ["key", "value"]
+                                    }
+                                }
+                            },
+                            "propertyOrdering": ["title", "label", "content"]
+                        }
+                    }
+                };
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                console.log("Sending request to Gemini API...");
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                console.log("Received response from Gemini API.");
+                if (!response.ok) {
+                    const errorDetails = await response.json();
+                    console.error('Gemini API error response:', errorDetails);
+                    throw new Error(`API call failed: ${response.status} - ${errorDetails.error ? errorDetails.error.message : 'Unknown error'}`);
+                }
+
+                const result = await response.json();
+                console.log("Gemini API raw result:", result); // Log the full result for debugging
+                
+                // Hide loading spinner
+                document.getElementById('photoLoading').classList.add('hidden');
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    console.log("JSON string from AI:", jsonString);
+                    const parsedData = JSON.parse(jsonString);
+
+                    currentExtractedTitle = parsedData.title || 'No Title Found';
+                    currentExtractedContent = parsedData.content || [];
+                    currentExtractedLabel = parsedData.label || 'Uncategorized';
+
+                    // Display extracted data in the modal
+                    document.getElementById('extractedTitle').textContent = currentExtractedTitle;
+                    document.getElementById('extractedLabel').textContent = currentExtractedLabel;
+                    const extractedContentList = document.getElementById('extractedContentList');
+                    extractedContentList.innerHTML = ''; // Clear previous content
+                    if (currentExtractedContent.length > 0) {
+                        currentExtractedContent.forEach(item => {
+                            const li = document.createElement('li');
+                            li.textContent = `${item.key || 'N/A'}: ${item.value || 'N/A'}`; // Handle potentially missing key/value
+                            extractedContentList.appendChild(li);
+                        });
+                    } else {
+                        extractedContentList.innerHTML = '<li>No detailed content extracted.</li>';
+                    }
+                    document.getElementById('extractedContentDisplay').classList.remove('hidden');
+                    document.getElementById('applyChangesButton').disabled = false; // Enable apply button
+
+                } else {
+                    document.getElementById('extractedContentDisplay').classList.remove('hidden');
+                    document.getElementById('extractedTitle').textContent = 'No Data Extracted';
+                    document.getElementById('extractedLabel').textContent = 'N/A';
+                    document.getElementById('extractedContentList').innerHTML = '<li>AI did not return content in the expected format.</li>';
+                    console.warn("AI response missing expected content structure:", result);
+                }
+
+            } catch (error) {
+                console.error('Error processing image with Gemini:', error);
+                document.getElementById('photoLoading').classList.add('hidden');
+                document.getElementById('extractedContentDisplay').classList.remove('hidden');
+                document.getElementById('extractedTitle').textContent = 'Error';
+                document.getElementById('extractedLabel').textContent = 'Error';
+                document.getElementById('extractedContentList').innerHTML = `<li class="text-red-500">Error: ${error.message}. Please ensure the image is clear and try again.</li>`;
+            }
+        }
+
+        function applyExtractedContent() {
+            // Update the form fields
+            document.getElementById('hisaabTitleInput').value = currentExtractedTitle;
+            document.getElementById('hisaabLabelInput').value = currentExtractedLabel;
+
+            // Clear existing content fields and add new ones
+            const contentFieldsContainer = document.getElementById('contentFields');
+            contentFieldsContainer.innerHTML = ''; // Clear all existing key/value pairs
+
+            if (currentExtractedContent.length > 0) {
+                currentExtractedContent.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = "flex flex-col sm:flex-row gap-2 mt-2";
+                    // Ensure values are numbers for the input type="number"
+                    const parsedValue = parseFloat(String(item.value).replace(/[^0-9.-]+/g,"")); // Remove non-numeric chars for parsing
+                    div.innerHTML = `
+                        <input type="text" name="key[]" placeholder="Expense Name" class="border p-2 w-full rounded" value="${item.key || ''}" />
+                        <input type="number" name="value[]" placeholder="Amount" class="border p-2 w-full rounded" value="${isNaN(parsedValue) ? '' : parsedValue}" />
+                    `;
+                    contentFieldsContainer.appendChild(div);
+                });
+            } else {
+                // If no content extracted, add one empty field for user to fill
+                addField();
+            }
+
+            closePhotoModal(); // Close the modal after applying
+        }
+    </script>
 
 </body>
+
 </html>
