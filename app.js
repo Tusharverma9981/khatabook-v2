@@ -102,7 +102,7 @@ app.get('/search', authMiddleware, async (req, res) => {
 
 
 app.get('/create', (req,res)=>{
-  res.render('create')
+  res.render('create',{geminiApi:process.env.GEMINIAPI})
 });
 
 
