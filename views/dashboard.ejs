@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Expense Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Ensure canvas elements are flexible within their parents */
+        /* Removed 'height: auto !important;' to let Chart.js manage height with maintainAspectRatio: true */
+        canvas {
+            display: block; /* Prevents extra space below canvas */
+            width: 100% !important; /* Override Chart.js inline styles if necessary */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <main class="max-w-6xl mx-auto py-10 px-5">
+        <h1 class="text-3xl font-bold mb-8 text-center md:text-left">Expense Dashboard</h1>
+
+        <% if (expensesByCategory.length === 0 && hisaabTotals.length === 0) { %>
+            <p class="text-gray-500 text-center">No expense or Hisaab data available yet.</p>
+        <% } else { %>
+            <div class="flex flex-col md:flex-row gap-8 items-stretch">
+                <div class="w-full md:w-1/2 bg-white shadow rounded-lg p-6 flex flex-col justify-center items-center flex-grow min-h-0">
+                    <canvas id="expenseChart" class="max-w-full"></canvas>
+                </div>
+
+                <div class="w-full md:w-1/2 bg-white shadow rounded-lg p-6 flex flex-col justify-center items-center flex-grow min-h-0">
+                    
+                    <canvas id="hisaabChart" class="max-w-full"></canvas>
+                </div>
+            </div>
+        <% } %>
+
+        <div class="mt-10 text-center md:text-left">
+            <a href="/" class="text-blue-600 hover:underline inline-block px-4 py-2 rounded-md bg-blue-100 hover:bg-blue-200 transition-colors duration-200">← Back to Home</a>
+        </div>
+    </main>
+
+    <% if (expensesByCategory.length > 0 || hisaabTotals.length > 0) { %>
+        <script>
+            // --- Expense Chart (Pie Chart) ---
+            <% if (expensesByCategory.length > 0) { %>
+                const ctxExpense = document.getElementById('expenseChart').getContext('2d');
+
+                const expenseData = {
+                    labels: <%- JSON.stringify(expensesByCategory.map(item => item._id)) %>,
+                    datasets: [{
+                        label: 'Expenses by Category',
+                        data: <%- JSON.stringify(expensesByCategory.map(item => item.totalAmount)) %>,
+                        backgroundColor: [
+                            '#4f46e5', // Indigo 600
+                            '#16a34a', // Green 600
+                            '#e11d48', // Rose 600
+                            '#f59e0b', // Amber 500
+                            '#0ea5e9', // Sky 500
+                            '#6366f1', // Violet 500
+                            '#10b981'  // Emerald 500
+                        ],
+                        borderColor: '#fff', // White border for slices
+                        borderWidth: 2
+                    }]
+                };
+
+                const expenseOptions = {
+                    responsive: true, // Make the chart responsive to container size changes
+                    maintainAspectRatio: true, // Set to true to prevent stretching and maintain aspect ratio
+                    plugins: {
+                        legend: {
+                            position: 'bottom', // Position legend at the bottom
+                            labels: {
+                                font: {
+                                    size: 14 // Adjust legend font size
+                                }
+                            }
+                        },
+                        title: {
+                            display: true, // Display chart title
+                            text: 'Expenses by Category',
+                            font: {
+                                size: 18, // Adjust title font size
+                                weight: 'bold'
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 20
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                // Custom tooltip to show percentage
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                                    const value = context.parsed;
+                                    const percentage = ((value / total) * 100).toFixed(2) + '%';
+                                    return label + value + ' (' + percentage + ')';
+                                }
+                            }
+                        }
+                    }
+                };
+
+                new Chart(ctxExpense, {
+                    type: 'pie', // Pie chart type
+                    data: expenseData,
+                    options: expenseOptions
+                });
+            <% } %>
+
+            // --- Hisaab Chart (Bar Chart) ---
+            <% if (hisaabTotals.length > 0) { %>
+                const ctxHisaab = document.getElementById('hisaabChart').getContext('2d');
+                const hisaabLabels = <%- JSON.stringify(hisaabTotals.map(h => h.title)) %>;
+                const hisaabValues = <%- JSON.stringify(hisaabTotals.map(h => h.totalValue)) %>;
+
+                new Chart(ctxHisaab, {
+                    type: 'bar',
+                    data: {
+                        labels: hisaabLabels,
+                        datasets: [{
+                            label: 'Hisaab Total',
+                            data: hisaabValues,
+                            backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                            borderColor: 'rgba(255, 159, 64, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true, // Make the chart responsive
+                        maintainAspectRatio: true, // Set to true to prevent stretching and maintain aspect ratio
+                        plugins: {
+                            legend: {
+                                display: false // Hide legend for this chart
+                            },
+                            title: {
+                                display: true,
+                                text: 'Total per Hisaab',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    top: 10,
+                                    bottom: 20
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true // Start y-axis at zero
+                            }
+                        }
+                    }
+                });
+            <% } %>
+        </script>
+    <% } %>
+</body>
+</html>

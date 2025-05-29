@@ -284,6 +284,71 @@ app.post('/unlock/:id',async (req,res)=> {
   res.render('error', { message: "Access Denied"  });
 })
 
+//dashboard routes
+app.get('/dashboard', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    
+          // Aggregate total expenses grouped by label/category
+          const expensesByCategory = await Hisaab.aggregate([
+      { $match: { createdBy: req.user._id, encrypted: false } },
+      {
+        $project: {
+          label: 1,
+          totalValue: {
+            $sum: {
+              $map: {
+                input: '$content',
+                as: 'item',
+                in: { $toDouble: '$$item.value' }
+              }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: '$label',
+          totalAmount: { $sum: '$totalValue' }
+        }
+      }
+    ]);
+
+      console.log(expensesByCategory);
+
+      // 2. Total per Hisaab
+    const hisaabTotals = await Hisaab.aggregate([
+      {
+        $match: {
+          createdBy: userId,
+          encrypted: false
+        }
+      },
+      {
+        $project: {
+          title: 1,
+          totalValue: {
+            $sum: {
+              $map: {
+                input: '$content',
+                as: 'item',
+                in: { $toDouble: '$$item.value' }
+              }
+            }
+          }
+        }
+      }
+    ]);
+      
+    // Render dashboard and pass aggregated data
+    res.render('dashboard', { expensesByCategory,hisaabTotals });
+
+  } catch (err) {
+    console.error(err);
+    res.render('error', { message: 'Failed to load dashboard data' });
+  }
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
