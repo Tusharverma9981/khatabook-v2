@@ -37,6 +37,7 @@ app.post('/',(req,res)=>{
 
 app.get('/register', (req, res) => {
   res.render('register');
+  
 })
 
 //these are for the main usage
@@ -115,6 +116,7 @@ app.post('/login',async (req, res) => {
     if (!user) {
      return res.render('error', { message: 'Invalid email' });
     }
+
 
      // Compare password with the hashed one
     const isMatch = await bcrypt.compare(password, user.password);
