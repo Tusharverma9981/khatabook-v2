@@ -133,13 +133,4 @@ Deploy on:
 
 ---
 
-### 💡 Suggested Names (Alt to KhataBook)
 
-* MyHisaab
-* DailyKhata
-* PocketNote
-* RupiyaBook
-* HisaabMitra
-* PaisaPad
-
----
