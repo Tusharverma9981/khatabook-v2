@@ -1,80 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>Hisaab – Your Expense Tracker</title>
-    <!-- Favicon placeholder -->
-    <link rel="icon" href="https://placehold.co/32x32/cccccc/000000?text=H">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
-    <style>
-        /* Custom font family for the entire body */
-        body {
-            font-family: 'Inter', sans-serif;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>KhaataPro - Home</title>
+  <link rel="icon" href="https://placehold.co/32x32/cccccc/000000?text=K"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            poppins: ['Poppins', 'sans-serif'],
+          }
         }
-    </style>
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
-
-<body>
-    <main class="w-full min-h-screen bg-zinc-100">
-        <nav class="flex flex-col md:flex-row px-4 md:px-10 justify-between py-5 items-center">
-            <h3 class="text-2xl tracking-tight mb-4 md:mb-0">KhaataPro</h3>
-            
-            <form method="GET" action="/search" class="flex flex-col md:flex-row gap-4 md:pr-10 w-full md:w-auto">
-                <input type="text" name="search" placeholder="Search by title" class="bg-zinc-100 px-4 py-2 border rounded w-full md:w-64" />
-                <input type="date" name="date" class="px-4 py-2 border rounded bg-zinc-100 w-full md:w-auto" />
-                <button type="submit" class="bg-blue-400 text-white px-4 py-2 rounded w-full md:w-auto">Search</button>
-            </form>
-            
-            <div class="navlinks flex flex-col md:flex-row gap-2 md:gap-5 mt-4 md:mt-0 items-center md:items-center md:justify-end">
-                <a class="tracking-tight hover:underline" href="/dashboard">Dashboard</a>
-                <a class="tracking-tight hover:underline" href="/create">Create New Hisaab</a>
-                <form action="/logout" method="POST">
-                    <button type="submit" class="tracking-tight hover:underline focus:outline-none">
-                        Logout
-                    </button>
-                </form>
-            </div>
-        </nav>
-
-        <div class="px-4 md:px-10 hisaabs">
-            <h3 class="capitalize text-2xl font-medium mb-5 mt-10 tracking-tight">All hisaab kitaab</h3>
-            
-            <form method="GET" action="/">
-                <select name="sort" onchange="this.form.submit()" class="bg-zinc-100 border rounded-md px-3 py-2 border-opacity-0">
-                    <option class="bg-zinc-100 border-opacity-0" value="date_desc" <%= sortBy === 'date_desc' ? 'selected' : '' %>>Newest First</option>
-                    <option class="bg-zinc-100 border-opacity-0" value="date_asc" <%= sortBy === 'date_asc' ? 'selected' : '' %>>Oldest First</option>
-                    <option class="bg-zinc-100 border-opacity-0" value="title_asc" <%= sortBy === 'title_asc' ? 'selected' : '' %>>Title A-Z</option>
-                    <option class="bg-zinc-100 border-opacity-0" value="title_desc" <%= sortBy === 'title_desc' ? 'selected' : '' %>>Title Z-A</option>
-                </select>
-            </form>
-
-            <div class="flex flex-wrap justify-center md:justify-start gap-4 mt-5">
-                <% hisaabs.forEach(hisaab => { %>
-                <a href="/hisaab/<%=hisaab._id%>" class="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)] xl:w-[calc(25%-1rem)] max-w-xs md:max-w-none">
-                    <div class="bg-white shadow-md rounded-xl p-4 transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
-                            <p class="text-lg font-bold text-left text-gray-800 mb-1 sm:mb-0"><%= hisaab.title %></p>
-                            <p class="text-xs text-gray-500 mt-1 sm:ml-2"><%= hisaab.date.toDateString() %></p>
-                        </div>
-                        
-                        <div class="mt-2 flex flex-wrap items-center">
-                            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full mb-2 sm:mb-0">
-                                <%= hisaab.label %>
-                            </span>
-                            <% if (hisaab.encrypted) { %>
-                            <span class="ml-2 text-gray-400 mb-2 sm:mb-0">🔒 Encrypted</span>
-                            <% } %>
-                        </div>
-                    </div>
-                </a>
-                <% }); %>
-            </div>
+<body class="h-full bg-indigo-600 font-poppins">
+  <main class="w-full min-h-screen relative">
+    <!-- Top Banner with Radial Gradient Overlay -->
+    <header class="relative bg-indigo-700 bg-opacity-50 backdrop-blur-md py-12 px-4 md:px-10 text-center overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)]"></div>
+      <div class="relative z-10">
+        <div class="flex items-center justify-center mb-4">
+          <i class="fas fa-wallet text-white text-3xl mr-2"></i>
+          <h1 class="text-3xl md:text-4xl font-bold text-white">KhaataPro</h1>
         </div>
-    </main>
-</body>
+        <p class="text-indigo-200 text-lg">Your ultimate expense tracker</p>
+        <a
+          href="/create"
+          class="inline-block mt-6 bg-indigo-800 text-white px-6 py-3 rounded-full hover:bg-indigo-900 transform hover:scale-105 transition duration-200"
+        >
+          Add New Hisaab
+        </a>
+      </div>
+    </header>
 
+    <!-- Filter Toggle Button -->
+    <div class="max-w-md mx-auto -mt-8 px-4">
+      <button
+        id="toggleFilter"
+        class="w-full bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 transform hover:scale-105 transition duration-200 flex items-center justify-center"
+      >
+        <i class="fas fa-search mr-2"></i> Filters
+      </button>
+    </div>
+
+    <!-- Floating Filter Form (Hidden by Default) -->
+    <div id="filterForm" class="hidden max-w-md mx-auto mt-4 px-4">
+      <div class="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-6 shadow-xl animate-slideIn">
+        <form method="GET" action="/search" class="space-y-4">
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-search text-indigo-300"></i>
+            </div>
+            <input
+              type="text"
+              name="search"
+              placeholder="Search by title"
+              class="w-full pl-10 pr-3 py-2 bg-indigo-600 bg-opacity-30 text-white placeholder-indigo-300 border border-indigo-300 border-opacity-30 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+            />
+          </div>
+          <input
+            type="date"
+            name="date"
+            class="w-full px-4 py-2 bg-indigo-600 bg-opacity-30 text-white border border-indigo-300 border-opacity-30 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+          />
+          <button
+            type="submit"
+            class="w-full bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 transform hover:scale-105 transition duration-200"
+          >
+            Search
+          </button>
+        </form>
+        <form method="GET" action="/" class="mt-4">
+          <select
+            name="sort"
+            onchange="this.form.submit()"
+            class="w-full bg-indigo-600 bg-opacity-30 text-white border border-indigo-300 border-opacity-30 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition"
+          >
+            <option class="bg-indigo-800 text-white" value="date_desc" <%= sortBy === 'date_desc' ? 'selected' : '' %>>Newest First</option>
+            <option class="bg-indigo-800 text-white" value="date_asc" <%= sortBy === 'date_asc' ? 'selected' : '' %>>Oldest First</option>
+            <option class="bg-indigo-800 text-white" value="title_asc" <%= sortBy === 'title_asc' ? 'selected' : '' %>>Title A-Z</option>
+            <option class="bg-indigo-800 text-white" value="title_desc" <%= sortBy === 'title_desc' ? 'selected' : '' %>>Title Z-A</option>
+          </select>
+        </form>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="px-4 md:px-10 pb-12 max-w-6xl mx-auto">
+      <!-- Circular Progress Indicator (Decorative) -->
+      <div class="flex justify-center mb-8">
+        <div class="relative w-24 h-24">
+          <div class="absolute inset-0 bg-indigo-500 bg-opacity-20 rounded-full"></div>
+          <div class="absolute inset-2 bg-indigo-600 rounded-full flex items-center justify-center">
+            <span class="text-white text-sm font-semibold">Expenses</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expense Cards (Stacked Layout) -->
+      <div class="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-3">
+         <% hisaabs.forEach(hisaab => { %>
+        <!-- Sample Card (Replace with dynamic data) -->
+        <a href="/hisaab/<%=hisaab._id%>" class="block md:transform md:hover:-translate-y-2 transition duration-300">
+          <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-6 shadow-lg animate-fadeIn md:ml-4">
+            <div class="flex justify-between items-center mb-4">
+              <p class="text-lg font-bold text-white"><%= hisaab.title %></p>
+              <p class="text-xs text-indigo-200"><%= hisaab.date.toDateString() %></p>
+            </div>
+            <div class="flex items-center">
+              <span class="inline-block px-3 py-1 bg-indigo-500 bg-opacity-50 text-white text-sm font-semibold rounded-full">
+                <%= hisaab.label %>
+              </span>
+                <% if (hisaab.encrypted) { %>
+              <span class="ml-2 text-indigo-200">
+                <i class="fas fa-lock"></i> Encrypted
+              </span>
+                <% } %>
+            </div>
+          </div>
+        </a>
+<!-- Sample Card -->
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Hamburger Menu (Floating Button) -->
+    <div class="fixed bottom-6 right-6 z-20">
+      <button
+        id="toggleMenu"
+        class="bg-indigo-700 text-white p-4 rounded-full shadow-lg hover:bg-indigo-800 transform hover:scale-110 transition duration-200"
+      >
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+      <!-- Menu Dropdown (Hidden by Default) -->
+      <div id="menu" class="hidden absolute bottom-16 right-0 w-48 bg-white bg-opacity-20 backdrop-blur-md rounded-lg shadow-xl animate-slideIn">
+        <a href="/dashboard" class="block px-4 py-2 text-white hover:bg-indigo-700 hover:bg-opacity-50 rounded-t-lg">
+          <i class="fas fa-chart-line mr-2"></i> Dashboard
+        </a>
+        <a href="/create" class="block px-4 py-2 text-white hover:bg-indigo-700 hover:bg-opacity-50">
+          <i class="fas fa-plus mr-2"></i> Create New Hisaab
+        </a>
+        <form action="/logout" method="POST">
+          <button type="submit" class="w-full text-left px-4 py-2 text-white hover:bg-indigo-700 hover:bg-opacity-50 rounded-b-lg">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript for Toggling Menus -->
+  <script>
+    // Toggle Filter Form
+    const toggleFilter = document.getElementById('toggleFilter');
+    const filterForm = document.getElementById('filterForm');
+    toggleFilter.addEventListener('click', () => {
+      filterForm.classList.toggle('hidden');
+    });
+
+    // Toggle Hamburger Menu
+    const toggleMenu = document.getElementById('toggleMenu');
+    const menu = document.getElementById('menu');
+    toggleMenu.addEventListener('click', () => {
+      menu.classList.toggle('hidden');
+    });
+  </script>
+
+  <!-- Animations -->
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.8s ease-out;
+    }
+    .animate-slideIn {
+      animation: slideIn 0.4s ease-out;
+    }
+  </style>
+</body>
 </html>
